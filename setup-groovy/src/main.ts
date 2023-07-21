@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import * as exec from '@actions/exec'
 import * as fs from 'fs'
 
-export const SDKMAN_DIR = '/home/derek/sdkmantest'
+export const SDKMAN_DIR = process.cwd() + '/sdkmantest'
 
 async function run(): Promise<void> {
   try {

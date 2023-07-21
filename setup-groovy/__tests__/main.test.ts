@@ -5,7 +5,7 @@ import {expect, test, beforeEach} from '@jest/globals'
 import {installSdkman, SDKMAN_DIR} from '../src/main'
 import * as fs from 'fs'
 
-const customInstallDir = '/home/derek/customsdkmandir'
+const customInstallDir = process.cwd() + '/customsdkmandir'
 
 beforeEach(() => {
   fs.rmSync(SDKMAN_DIR, {recursive: true, force: true})
