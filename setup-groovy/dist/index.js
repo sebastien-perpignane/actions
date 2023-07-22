@@ -123,10 +123,11 @@ function installGroovy(groovyVersion, sdkmanInstallDir) {
         ]);
         console.log(output);
         console.log('Installing groovy - done');
-        fs.readdir(sdkmanInstallDir + "/candidates", (err, candidateFiles) => {
+        let candidatesDir = sdkmanInstallDir + "/candidates";
+        fs.readdir(candidatesDir, (err, candidateFiles) => {
             candidateFiles.forEach((candidateFile) => {
                 let candidateBinDir = candidateFile + "/current/bin";
-                if (fs.lstatSync(candidateFile).isDirectory() && fs.existsSync(candidateBinDir)) {
+                if (fs.lstatSync(candidatesDir + "/" + candidateFile).isDirectory() && fs.existsSync(candidateBinDir)) {
                     core.addPath(candidateBinDir);
                 }
             });
