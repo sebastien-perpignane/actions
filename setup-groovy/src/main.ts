@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import * as exec from '@actions/exec'
+import * as io from '@actions/io'
 import * as fs from 'fs'
 
 export const SDKMAN_DIR = process.cwd() + '/sdkmantest'
@@ -23,7 +24,7 @@ async function run(): Promise<void> {
 
     console.log("SDKMAN! installation: OK")
 
-    await installGroovy(groovyVersion)
+    await installGroovy(groovyVersion, sdkmanInstallDir)
 
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
@@ -78,15 +79,24 @@ async function runSdkmanInstallScript(sdkmanInstallDir: string, scriptStr: strin
   return await exec.exec('bash', [], bashOptions)
 }
 
-async function installGroovy(groovyVersion: string) {
+async function installGroovy(groovyVersion: string, sdkmanInstallDir: string) {
   console.log('Installing groovy...')
   let output = await exec.getExecOutput('bash', [
     '-c',
-    "source " + SDKMAN_DIR + "/bin/sdkman-init.sh && sdk install groovy " + groovyVersion
+    "source " + sdkmanInstallDir + "/bin/sdkman-init.sh && sdk install groovy " + groovyVersion
   ])
   console.log(output)
 
   console.log('Installing groovy - done')
+
+  fs.readdir(sdkmanInstallDir + "/candidates", (err, candidateFiles) => {
+    candidateFiles.forEach((candidateFile) => {
+        let candidateBinDir = candidateFile + "/current/bin"
+        if (fs.lstatSync(candidateFile).isDirectory() && fs.existsSync(candidateBinDir) ) {
+          core.addPath(candidateBinDir)
+        }
+    })
+  })
 
 }
 
