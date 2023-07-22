@@ -83,7 +83,7 @@ async function installGroovy(groovyVersion: string, sdkmanInstallDir: string) {
   console.log('Installing groovy...')
   let output = await exec.getExecOutput('bash', [
     '-c',
-    "source " + sdkmanInstallDir + "/bin/sdkman-init.sh && sdk install groovy " + groovyVersion
+    "export SDKMAN_DIR='" + sdkmanInstallDir + "' && source " + sdkmanInstallDir + "/bin/sdkman-init.sh && sdk install groovy " + groovyVersion
   ])
   console.log(output)
 
