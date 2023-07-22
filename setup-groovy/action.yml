@@ -2,10 +2,10 @@ name: 'Your name here'
 description: 'Provide a description here'
 author: 'Your name or organization here'
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  groovy-version:
+    description: 'The Groovy SDK version to setup. If no version is specified, the latest stable version will be selected automatically.'
+  sdkman-install-dir:
+    description: 'Where sdkman will be installed'
 runs:
   using: 'node16'
   main: 'dist/index.js'
