@@ -39,23 +39,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.installSdkman = void 0;
+exports.installSdkman = exports.SDKMAN_DIR = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const exec = __importStar(__nccwpck_require__(514));
 const fs = __importStar(__nccwpck_require__(147));
-const SDKMAN_DIR = '/home/derek/sdkmantest';
+exports.SDKMAN_DIR = process.cwd() + '/sdkmantest';
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             let groovyVersion = core.getInput("groovy-version");
-            let sdkmanExitCode = yield installSdkman();
+            let sdkmanInstallDir = core.getInput("sdkman-install-dir");
+            if (!sdkmanInstallDir) {
+                sdkmanInstallDir = exports.SDKMAN_DIR;
+            }
+            let sdkmanExitCode = yield installSdkman(sdkmanInstallDir);
             if (sdkmanExitCode) {
-                console.error("SDKMAN! installation: KO (error code: " + sdkmanExitCode + ")");
                 core.setFailed("SDKMAN! installation: KO (error code: " + sdkmanExitCode + ")");
                 return;
             }
             console.log("SDKMAN! installation: OK");
-            yield installGroovy(groovyVersion);
+            yield installGroovy(groovyVersion, sdkmanInstallDir);
         }
         catch (error) {
             if (error instanceof Error)
@@ -68,11 +71,11 @@ function extractGroovyDependencies() {
 }
 // TODO 
 // FIXME: throw error if something goes bad instead of returning exit number
-function installSdkman() {
+function installSdkman(sdkmanInstallDir) {
     return __awaiter(this, void 0, void 0, function* () {
         let curlOutput = yield getBashSdkmanInstallationScript();
-        let installScriptExitCode = yield runSdkmanInstallScript(curlOutput.stdout.toString());
-        configureSdkManForAutoAnswer();
+        let installScriptExitCode = yield runSdkmanInstallScript(sdkmanInstallDir, curlOutput.stdout.toString());
+        configureSdkManForAutoAnswer(sdkmanInstallDir);
         return installScriptExitCode;
     });
 }
@@ -85,9 +88,9 @@ function getBashSdkmanInstallationScript() {
         ]);
     });
 }
-function configureSdkManForAutoAnswer() {
+function configureSdkManForAutoAnswer(sdkmanInstallDir) {
     console.info("Configuring SDKMAN! in non interactive mode...");
-    const sdkmanConfigFilePath = SDKMAN_DIR + '/etc/config';
+    const sdkmanConfigFilePath = sdkmanInstallDir + '/etc/config';
     const allFileContents = fs.readFileSync(sdkmanConfigFilePath, 'utf-8');
     const newSdkManConfig = allFileContents.split(/\r?\n/).map(line => {
         if (line.startsWith('sdkman_auto_answer=')) {
@@ -100,29 +103,39 @@ function configureSdkManForAutoAnswer() {
     fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig);
     console.info("Configuring SDKMAN! in non interactive mode - done");
 }
-function runSdkmanInstallScript(scriptStr) {
+function runSdkmanInstallScript(sdkmanInstallDir, scriptStr) {
     return __awaiter(this, void 0, void 0, function* () {
         const bashOptions = {
             input: Buffer.from(scriptStr),
             env: {
-                SDKMAN_DIR: SDKMAN_DIR
+                SDKMAN_DIR: sdkmanInstallDir
             }
         };
         return yield exec.exec('bash', [], bashOptions);
     });
 }
-function installGroovy(groovyVersion) {
+function installGroovy(groovyVersion, sdkmanInstallDir) {
     return __awaiter(this, void 0, void 0, function* () {
         console.log('Installing groovy...');
         let output = yield exec.getExecOutput('bash', [
             '-c',
-            "source " + SDKMAN_DIR + "/bin/sdkman-init.sh && sdk install groovy " + groovyVersion
+            "source " + sdkmanInstallDir + "/bin/sdkman-init.sh && sdk install groovy " + groovyVersion
         ]);
         console.log(output);
         console.log('Installing groovy - done');
+        fs.readdir(sdkmanInstallDir + "/candidates", (err, candidateFiles) => {
+            candidateFiles.forEach((candidateFile) => {
+                let candidateBinDir = candidateFile + "/current/bin";
+                if (fs.lstatSync(candidateFile).isDirectory() && fs.existsSync(candidateBinDir)) {
+                    core.addPath(candidateBinDir);
+                }
+            });
+        });
     });
 }
-run();
+if (require.main === require.cache[eval('__filename')]) {
+    run();
+}
 
 
 /***/ }),
