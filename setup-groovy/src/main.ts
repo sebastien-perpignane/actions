@@ -92,9 +92,11 @@ async function installGroovy(groovyVersion: string, sdkmanInstallDir: string) {
   let candidatesDir = sdkmanInstallDir + "/candidates"
 
   fs.readdir(candidatesDir, (err, candidateFiles) => {
+    // TODO manage errors
     candidateFiles.forEach((candidateFile) => {
-        let candidateBinDir = candidateFile + "/current/bin"
-        if (fs.lstatSync(candidatesDir + "/" + candidateFile).isDirectory() && fs.existsSync(candidateBinDir) ) {
+        let candidateDir = candidatesDir + "/" + candidateFile
+        let candidateBinDir = candidateDir + "/current/bin"
+        if (fs.lstatSync(candidateBinDir).isDirectory() && fs.existsSync(candidateBinDir) ) {
           core.addPath(candidateBinDir)
         }
     })
