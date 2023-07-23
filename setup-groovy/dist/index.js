@@ -1,6 +1,78 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 647:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.Groovy = void 0;
+const core = __importStar(__nccwpck_require__(186));
+const exec = __importStar(__nccwpck_require__(514));
+class Groovy {
+    //private currentGroovyBinDir: string
+    constructor(sdkMan) {
+        this.sdkMan = sdkMan;
+        this.currentGroovyDir = `${sdkMan.candidatesDir()}/groovy/current/`;
+        //this.currentGroovyBinDir = `${this.currentGroovyDir}/bin`
+    }
+    getName() {
+        return 'groovy';
+    }
+    getCurrentDir() {
+        return this.currentGroovyDir;
+    }
+    install(version) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.sdkMan.isInstalled()) {
+                throw new Error('sdkman is not installed');
+            }
+            core.info('Installing groovy...');
+            yield this.sdkMan.install(this, version);
+        });
+    }
+    extractGroovyDependencies() {
+        exec.exec('groovy', ['GrapeDependencies.groovy']);
+    }
+}
+exports.Groovy = Groovy;
+
+
+/***/ }),
+
 /***/ 109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -39,26 +111,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.installSdkman = exports.SDKMAN_DIR = void 0;
+exports.SDKMAN_DIR = void 0;
 const core = __importStar(__nccwpck_require__(186));
-const exec = __importStar(__nccwpck_require__(514));
-const fs = __importStar(__nccwpck_require__(147));
-exports.SDKMAN_DIR = process.cwd() + '/sdkmantest';
+const sdkman_1 = __nccwpck_require__(302);
+const groovy_1 = __nccwpck_require__(647);
+const os = __importStar(__nccwpck_require__(37));
+exports.SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`;
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let groovyVersion = core.getInput("groovy-version");
-            let sdkmanInstallDir = core.getInput("sdkman-install-dir");
+            const groovyVersion = core.getInput('groovy-version', { required: true });
+            let sdkmanInstallDir = core.getInput('sdkman-install-dir');
             if (!sdkmanInstallDir) {
                 sdkmanInstallDir = exports.SDKMAN_DIR;
             }
-            let sdkmanExitCode = yield installSdkman(sdkmanInstallDir);
+            const sdkMan = new sdkman_1.SdkMan(sdkmanInstallDir);
+            const sdkmanExitCode = yield sdkMan.installSdkMan();
+            // FIXME use throw error instead
             if (sdkmanExitCode) {
-                core.setFailed("SDKMAN! installation: KO (error code: " + sdkmanExitCode + ")");
+                core.setFailed(`SDKMAN! installation: KO (error code: ${sdkmanExitCode})`);
                 return;
             }
-            console.log("SDKMAN! installation: OK");
-            yield installGroovy(groovyVersion, sdkmanInstallDir);
+            core.info('SDKMAN! installation: OK');
+            const groovy = new groovy_1.Groovy(sdkMan);
+            groovy.install(groovyVersion);
         }
         catch (error) {
             if (error instanceof Error)
@@ -66,79 +142,145 @@ function run() {
         }
     });
 }
-function extractGroovyDependencies() {
-    exec.exec('groovy', ['GrapeDependencies.groovy']);
-}
-// TODO 
-// FIXME: throw error if something goes bad instead of returning exit number
-function installSdkman(sdkmanInstallDir) {
-    return __awaiter(this, void 0, void 0, function* () {
-        let curlOutput = yield getBashSdkmanInstallationScript();
-        let installScriptExitCode = yield runSdkmanInstallScript(sdkmanInstallDir, curlOutput.stdout.toString());
-        configureSdkManForAutoAnswer(sdkmanInstallDir);
-        return installScriptExitCode;
-    });
-}
-exports.installSdkman = installSdkman;
-function getBashSdkmanInstallationScript() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return yield exec.getExecOutput('curl', [
-            '-s',
-            'https://get.sdkman.io?rcupdate=false'
-        ]);
-    });
-}
-function configureSdkManForAutoAnswer(sdkmanInstallDir) {
-    console.info("Configuring SDKMAN! in non interactive mode...");
-    const sdkmanConfigFilePath = sdkmanInstallDir + '/etc/config';
-    const allFileContents = fs.readFileSync(sdkmanConfigFilePath, 'utf-8');
-    const newSdkManConfig = allFileContents.split(/\r?\n/).map(line => {
-        if (line.startsWith('sdkman_auto_answer=')) {
-            return 'sdkman_auto_answer=true';
-        }
-        else {
-            return line;
-        }
-    }).join('\n');
-    fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig);
-    console.info("Configuring SDKMAN! in non interactive mode - done");
-}
-function runSdkmanInstallScript(sdkmanInstallDir, scriptStr) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const bashOptions = {
-            input: Buffer.from(scriptStr),
-            env: {
-                SDKMAN_DIR: sdkmanInstallDir
-            }
-        };
-        return yield exec.exec('bash', [], bashOptions);
-    });
-}
-function installGroovy(groovyVersion, sdkmanInstallDir) {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log('Installing groovy...');
-        let output = yield exec.getExecOutput('bash', [
-            '-c',
-            "export SDKMAN_DIR='" + sdkmanInstallDir + "' && source " + sdkmanInstallDir + "/bin/sdkman-init.sh && sdk install groovy " + groovyVersion
-        ]);
-        console.log(output);
-        console.log('Installing groovy - done');
-        let candidatesDir = sdkmanInstallDir + "/candidates";
-        fs.readdir(candidatesDir, (err, candidateFiles) => {
-            // TODO manage errors
-            candidateFiles.forEach((candidateFile) => {
-                let candidateDir = candidatesDir + "/" + candidateFile;
-                let candidateBinDir = candidateDir + "/current/bin";
-                if (fs.lstatSync(candidateBinDir).isDirectory() && fs.existsSync(candidateBinDir)) {
-                    core.addPath(candidateBinDir);
-                }
-            });
-        });
-    });
-}
 if (require.main === require.cache[eval('__filename')]) {
     run();
 }
+
+
+/***/ }),
+
+/***/ 302:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SdkMan = void 0;
+const exec = __importStar(__nccwpck_require__(514));
+const fs = __importStar(__nccwpck_require__(147));
+const core = __importStar(__nccwpck_require__(186));
+class SdkMan {
+    // download url for sdkman -> https://api.sdkman.io/2/broker/download/groovy/4.0.13/linux
+    // the url redirects the http client to the real download url of the candidate
+    constructor(installDir) {
+        this.installDir = installDir;
+    }
+    installSdkMan() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const curlOutput = yield this.getBashSdkmanInstallationScript();
+            const installScriptExitCode = yield this.runSdkmanInstallScript(this.installDir, curlOutput.stdout.toString());
+            this.configureSdkManForAutoAnswer();
+            return installScriptExitCode;
+        });
+    }
+    getBashSdkmanInstallationScript() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield exec.getExecOutput('curl', [
+                '-s',
+                'https://get.sdkman.io?rcupdate=false' //rcupdate=false -> do not modify .bashrc
+            ]);
+        });
+    }
+    runSdkmanInstallScript(sdkmanInstallDir, scriptStr) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bashOptions = {
+                input: Buffer.from(scriptStr),
+                env: {
+                    SDKMAN_DIR: sdkmanInstallDir
+                }
+            };
+            return yield exec.exec('bash', [], bashOptions);
+        });
+    }
+    configureSdkManForAutoAnswer() {
+        core.info('Configuring SDKMAN! in non interactive mode...');
+        const sdkmanConfigFilePath = `${this.installDir}/etc/config`;
+        const allFileContents = fs.readFileSync(sdkmanConfigFilePath, 'utf-8');
+        const newSdkManConfig = allFileContents
+            .split(/\r?\n/)
+            .map(line => {
+            if (line.startsWith('sdkman_auto_answer=')) {
+                return 'sdkman_auto_answer=true';
+            }
+            else {
+                return line;
+            }
+        })
+            .join('\n');
+        fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig);
+        core.info('Configuring SDKMAN! in non interactive mode - done');
+    }
+    uninstall(candidate, version) {
+        this.runCommand('uninstall', [candidate, version]);
+    }
+    install(candidate, version) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.runCommand('install', [candidate.getName(), version]);
+            if (this.findAllCandidates().find(file => {
+                return file.replace('/', '') === candidate.getName();
+            })) {
+                core.addPath(`${candidate.getCurrentDir()}/bin`);
+            }
+            else {
+                throw Error(`Installation of ${candidate} failed`);
+            }
+        });
+    }
+    isInstalled() {
+        return fs.existsSync(this.installDir);
+    }
+    findAllCandidates() {
+        const candidatesDir = `${this.installDir}/candidates`;
+        return fs.readdirSync(candidatesDir);
+    }
+    runCommand(cmd, params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sdkmanCmd = `${cmd} ${params.join(' ')}`;
+            yield exec.getExecOutput('bash', [
+                '-c',
+                `export SDKMAN_DIR='${this.installDir}' && ` +
+                    `source ${this.installDir}/bin/sdkman-init.sh && ` +
+                    `sdk ${sdkmanCmd}`
+            ]);
+        });
+    }
+    candidatesDir() {
+        return `${this.installDir}/candidates`;
+    }
+}
+exports.SdkMan = SdkMan;
 
 
 /***/ }),

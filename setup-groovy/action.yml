@@ -1,11 +1,19 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Setup Groovy SDK'
+description: 'Set up the wanted version of the Groovy SDK and 
+              add CLI commands to the PATH. Relies SDKMAN.'
+author: 'Sébastien Perpignane'
+
+branding:
+  icon: 'zap'
+  color: 'red'
+
 inputs:
   groovy-version:
-    description: 'The Groovy SDK version to setup. If no version is specified, the latest stable version will be selected automatically.'
+    description: 'The Groovy SDK version to setup'
+    required: true
   sdkman-install-dir:
     description: 'Where sdkman will be installed'
+    default: '<user directory>/sdkman_gh_actions'
 runs:
   using: 'node16'
   main: 'dist/index.js'
