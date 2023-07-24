@@ -12,8 +12,7 @@ inputs:
     description: 'The Groovy SDK version to setup'
     required: true
   sdkman-install-dir:
-    description: 'Where sdkman will be installed'
-    default: '<user directory>/sdkman_gh_actions'
+    description: 'Where sdkman will be installed. Default value is <user directory>/sdkman_gh_actions'
 runs:
   using: 'node16'
   main: 'dist/index.js'
