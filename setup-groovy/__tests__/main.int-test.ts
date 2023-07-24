@@ -1,7 +1,7 @@
 import * as process from 'process'
 import * as childProcess from 'child_process'
 import * as path from 'path'
-import {expect, test, afterEach} from '@jest/globals'
+import {expect, afterEach, test} from '@jest/globals'
 import {SDKMAN_DIR} from '../src/main'
 import * as fs from 'fs'
 
@@ -10,7 +10,7 @@ afterEach(() => {
 })
 
 // shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', async () => {
+test('test runs', () => {
   process.env['INPUT_GROOVY-VERSION'] = '4.0.13'
   const nodeProcessPath = process.execPath
   const mainScriptPath = path.join(__dirname, '..', 'lib', 'main.js')
@@ -24,4 +24,4 @@ test('test runs', async () => {
   )
 
   expect(fs.existsSync(SDKMAN_DIR))
-})
+}, 40000)

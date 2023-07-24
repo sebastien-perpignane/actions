@@ -63,7 +63,7 @@ export class SdkMan {
       .join('\n')
 
     fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig)
-    core.info('Configuring SDKMAN! in non interactive mode - done')
+    core.info('Configuring SDKMAN! in non interactive mode - OK')
   }
 
   uninstall(candidate: string, version: string): void {

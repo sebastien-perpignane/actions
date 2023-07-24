@@ -60,6 +60,7 @@ class Groovy {
             }
             core.info('Installing groovy...');
             yield this.sdkMan.install(this, version);
+            core.info('Installing groovy: OK');
         });
     }
     extractGroovyDependencies() {
@@ -239,7 +240,7 @@ class SdkMan {
         })
             .join('\n');
         fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig);
-        core.info('Configuring SDKMAN! in non interactive mode - done');
+        core.info('Configuring SDKMAN! in non interactive mode - OK');
     }
     uninstall(candidate, version) {
         this.runCommand('uninstall', [candidate, version]);

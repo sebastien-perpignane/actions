@@ -10,9 +10,10 @@
     "format-check": "prettier --check '**/*.ts'",
     "lint": "eslint src/**/*.ts",
     "package": "ncc build --source-map --license licenses.txt",
-    "test": "jest",
+    "test": "jest '^.*\\.test\\.ts$'",
+    "int-test": "jest '^.*\\.int-test\\.ts$'",
     "clean": "rm -Rf lib dist",
-    "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
+    "all": "npm run build && npm run format && npm run lint && npm run package && npm run test && npm run int-test"
   },
   "repository": {
     "type": "git",

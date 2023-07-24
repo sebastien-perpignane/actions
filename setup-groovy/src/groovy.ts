@@ -25,6 +25,8 @@ export class Groovy implements Candidate {
     core.info('Installing groovy...')
 
     await this.sdkMan.install(this, version)
+
+    core.info('Installing groovy: OK')
   }
 
   extractGroovyDependencies(): void {
