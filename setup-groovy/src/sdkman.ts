@@ -21,6 +21,7 @@ export class SdkMan {
       curlOutput.stdout.toString()
     )
     this.configureSdkManForAutoAnswer()
+    core.exportVariable('sdkman_dir', this.installDir)
     return installScriptExitCode
   }
 

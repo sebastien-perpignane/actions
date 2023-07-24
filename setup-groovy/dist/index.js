@@ -43,11 +43,9 @@ exports.Groovy = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const exec = __importStar(__nccwpck_require__(514));
 class Groovy {
-    //private currentGroovyBinDir: string
     constructor(sdkMan) {
         this.sdkMan = sdkMan;
         this.currentGroovyDir = `${sdkMan.candidatesDir()}/groovy/current/`;
-        //this.currentGroovyBinDir = `${this.currentGroovyDir}/bin`
     }
     getName() {
         return 'groovy';
@@ -202,6 +200,7 @@ class SdkMan {
             const curlOutput = yield this.getBashSdkmanInstallationScript();
             const installScriptExitCode = yield this.runSdkmanInstallScript(this.installDir, curlOutput.stdout.toString());
             this.configureSdkManForAutoAnswer();
+            core.exportVariable("SDKMAN_DIR", this.installDir);
             return installScriptExitCode;
         });
     }
