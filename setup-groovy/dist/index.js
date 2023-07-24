@@ -200,7 +200,7 @@ class SdkMan {
             const curlOutput = yield this.getBashSdkmanInstallationScript();
             const installScriptExitCode = yield this.runSdkmanInstallScript(this.installDir, curlOutput.stdout.toString());
             this.configureSdkManForAutoAnswer();
-            core.exportVariable("SDKMAN_DIR", this.installDir);
+            core.exportVariable('sdkman_dir', this.installDir);
             return installScriptExitCode;
         });
     }
