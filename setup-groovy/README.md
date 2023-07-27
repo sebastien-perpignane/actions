@@ -5,7 +5,7 @@ If you want to select the java distribution and version that will run your Groov
 
 # Usage:
 
-  - `groovy-version`: The Groovy version that will be set up. If not specified, the latest stable version will be installed.
+  - `groovy-version`: The Groovy version that will be set up. Mandatory input.
   - `sdkman-install-dir`: if you want to decide where sdkman will be installed. Default path is <user directory>/sdkman_gh_actions .
 
 
@@ -32,7 +32,7 @@ steps:
       with:
         groovy-version: '4.0.13'
 
-    - name: Run groovy script
+    - name: Compile groovy 
       shell: bash
       run: groovyc MyScript.groovy
 
