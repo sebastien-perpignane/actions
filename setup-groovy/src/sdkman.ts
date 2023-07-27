@@ -70,7 +70,7 @@ export class SdkMan {
     this.runCommand('uninstall', [candidate, version])
   }
 
-  async install(candidate: Candidate, version: string): Promise<void> {
+  async installCandidate(candidate: Candidate, version: string): Promise<void> {
     await this.runCommand('install', [candidate.getName(), version])
 
     if (
