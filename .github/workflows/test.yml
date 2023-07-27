@@ -9,6 +9,11 @@ on: # rebuild any PRs and main branch changes
 jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./setup-groovy
+
     steps:
       - uses: actions/checkout@v3
       - run: |
@@ -17,8 +22,13 @@ jobs:
           npm run all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./setup-groovy
+
     steps:
       - uses: actions/checkout@v3
       - uses: ./
         with:
-          milliseconds: 1000
+          groovy-version: 4.0.13
