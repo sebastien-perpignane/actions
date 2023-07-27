@@ -29,6 +29,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: ./
+      - uses: ./setup-groovy/
         with:
           groovy-version: 4.0.13
