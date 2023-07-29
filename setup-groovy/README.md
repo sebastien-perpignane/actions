@@ -15,7 +15,7 @@ We have a script named MyScript.groovy at the root of our repository. To run it 
 
 ```yaml
 steps:
-    - uses: sebastien-perpignane/actions/setup-groovy@vmain
+    - uses: sebastien-perpignane/actions/setup-groovy@main
       with:
         groovy-version: '4.0.13'
 
@@ -42,6 +42,4 @@ steps:
 ```
 
 # Next step
-
-- use tool caching
 - Manage a cache for grape.
