@@ -2,10 +2,12 @@ import * as exec from '@actions/exec'
 import * as fs from 'fs'
 import * as core from '@actions/core'
 
-export interface Candidate {
-  getName(): string
+import * as os from 'os'
 
-  getCurrentDir(): string
+export const SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`
+
+export interface Candidate {
+  name: string
 }
 
 export class SdkMan {
@@ -15,39 +17,47 @@ export class SdkMan {
   constructor(private installDir: string) {}
 
   async installSdkMan(): Promise<number> {
-    const curlOutput = await this.getBashSdkmanInstallationScript()
+    const installScriptAsString = await this.getBashSdkmanInstallationScript()
     const installScriptExitCode = await this.runSdkmanInstallScript(
-      this.installDir,
-      curlOutput.stdout.toString()
+      installScriptAsString
     )
     this.configureSdkManForAutoAnswer()
     core.exportVariable('sdkman_dir', this.installDir)
     return installScriptExitCode
   }
 
-  private async getBashSdkmanInstallationScript(): Promise<exec.ExecOutput> {
-    return await exec.getExecOutput('curl', [
+  private async getBashSdkmanInstallationScript(): Promise<string> {
+    core.startGroup('Downloading SDKMAN bash install script')
+
+    const execOutput = await exec.getExecOutput('curl', [
       '-s',
       'https://get.sdkman.io?rcupdate=false' //rcupdate=false -> do not modify .bashrc
     ])
+
+    core.endGroup()
+
+    return execOutput.stdout
   }
 
-  private async runSdkmanInstallScript(
-    sdkmanInstallDir: string,
-    scriptStr: string
-  ): Promise<number> {
+  private async runSdkmanInstallScript(scriptStr: string): Promise<number> {
     const bashOptions = {
       input: Buffer.from(scriptStr),
       env: {
-        SDKMAN_DIR: sdkmanInstallDir
+        SDKMAN_DIR: this.installDir
       }
     }
 
-    return await exec.exec('bash', [], bashOptions)
+    core.startGroup('Running SDKMAN installation script')
+
+    const cmdExitCode = await exec.exec('bash', [], bashOptions)
+
+    core.endGroup()
+
+    return cmdExitCode
   }
 
   configureSdkManForAutoAnswer(): void {
-    core.info('Configuring SDKMAN! in non interactive mode...')
+    core.startGroup('Configuring SDKMAN! in non interactive mode')
     const sdkmanConfigFilePath = `${this.installDir}/etc/config`
     const allFileContents = fs.readFileSync(sdkmanConfigFilePath, 'utf-8')
 
@@ -62,35 +72,67 @@ export class SdkMan {
       })
       .join('\n')
 
+    core.info(`New SDKMAN config:\n${newSdkManConfig}`)
+
     fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig)
-    core.info('Configuring SDKMAN! in non interactive mode - OK')
+    core.endGroup()
   }
 
-  uninstall(candidate: string, version: string): void {
-    this.runCommand('uninstall', [candidate, version])
-  }
-
-  async installCandidate(candidate: Candidate, version: string): Promise<void> {
-    await this.runCommand('install', [candidate.getName(), version])
-
-    if (
-      this.findAllCandidates().find(file => {
-        return file.replace('/', '') === candidate.getName()
-      })
-    ) {
-      core.addPath(`${candidate.getCurrentDir()}/bin`)
-    } else {
-      throw Error(`Installation of ${candidate} failed`)
+  async uninstall(
+    candidate: string,
+    version: string,
+    force = false
+  ): Promise<void> {
+    const params = [candidate, version]
+    if (force) {
+      params.push('--force')
     }
+
+    await this.runCommand('uninstall', params)
+  }
+
+  async installCandidateAndAddToPath(
+    candidate: Candidate,
+    version: string
+  ): Promise<void> {
+    core.startGroup(`Installing ${candidate.name} ${version}...`)
+
+    await this.runCommand('install', [candidate.name, version])
+
+    const candidateCurrentDir = this.candidateCurrentDir(candidate)
+
+    core.endGroup()
+
+    if (fs.existsSync(candidateCurrentDir)) {
+      core.addPath(`${this.candidateCurrentDir(candidate)}/bin`)
+      core.info(`Installing ${candidate.name} ${version}: OK`)
+    } else {
+      throw Error(`Installation of ${candidate.name} failed`)
+    }
+  }
+
+  private candidateDir(candidate: Candidate): string {
+    return `${this.candidatesDir()}/${candidate.name}`
+  }
+
+  private candidateCurrentDir(candidate: Candidate): string {
+    return `${this.candidateDir(candidate)}/current`
+  }
+
+  private candidateVersionDir(candidate: Candidate, version: string): string {
+    return `${this.candidateDir(candidate)}/${version}`
   }
 
   isInstalled(): boolean {
     return fs.existsSync(this.installDir)
   }
 
-  private findAllCandidates(): string[] {
-    const candidatesDir = `${this.installDir}/candidates`
-    return fs.readdirSync(candidatesDir)
+  isCandidateInstalled(candidate: Candidate): boolean {
+    return fs.existsSync(this.candidateDir(candidate))
+  }
+
+  isCandidateVersionInstalled(candidate: Candidate, version: string): boolean {
+    return fs.existsSync(this.candidateVersionDir(candidate, version))
   }
 
   private async runCommand(cmd: string, params: string[]): Promise<void> {
@@ -106,4 +148,26 @@ export class SdkMan {
   candidatesDir(): string {
     return `${this.installDir}/candidates`
   }
+}
+
+async function run(): Promise<void> {
+  try {
+    let sdkmanInstallDir = core.getInput('sdkman-install-dir')
+    if (!sdkmanInstallDir) {
+      sdkmanInstallDir = SDKMAN_DIR
+    }
+    const sdkMan = new SdkMan(sdkmanInstallDir)
+    const sdkmanExitCode = await sdkMan.installSdkMan()
+    if (sdkmanExitCode) {
+      core.setFailed(`SDKMAN! installation: KO (error code: ${sdkmanExitCode})`)
+      return
+    }
+    core.info('SDKMAN! installation: OK')
+  } catch (error) {
+    if (error instanceof Error) core.setFailed(error.message)
+  }
+}
+
+if (require.main === module) {
+  run()
 }

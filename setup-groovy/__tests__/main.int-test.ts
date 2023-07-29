@@ -10,7 +10,7 @@ afterEach(() => {
 })
 
 // shows how the runner will run a javascript action with env / stdout protocol
-test('test runs', () => {
+test('run action', () => {
   process.env['INPUT_GROOVY-VERSION'] = '4.0.13'
   const nodeProcessPath = process.execPath
   const mainScriptPath = path.join(__dirname, '..', 'lib', 'main.js')
@@ -24,4 +24,6 @@ test('test runs', () => {
   )
 
   expect(fs.existsSync(SDKMAN_DIR))
+  expect(fs.existsSync(`${SDKMAN_DIR}/candidates/groovy/4.0.13`))
+  expect(fs.existsSync(`${SDKMAN_DIR}/candidates/groovy/current`))
 }, 40000)
