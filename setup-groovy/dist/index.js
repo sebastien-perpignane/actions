@@ -206,7 +206,7 @@ class SdkMan {
     }
     getBashSdkmanInstallationScript() {
         return __awaiter(this, void 0, void 0, function* () {
-            core.startGroup('Downloading SDKMAN bash install script');
+            core.startGroup('Downloading SDKMAN bash install script :right_arrow_curving_down:');
             const execOutput = yield exec.getExecOutput('curl', [
                 '-s',
                 'https://get.sdkman.io?rcupdate=false' //rcupdate=false -> do not modify .bashrc

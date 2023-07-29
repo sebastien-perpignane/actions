@@ -27,7 +27,9 @@ export class SdkMan {
   }
 
   private async getBashSdkmanInstallationScript(): Promise<string> {
-    core.startGroup('Downloading SDKMAN bash install script')
+    core.startGroup(
+      'Downloading SDKMAN bash install script :right_arrow_curving_down:'
+    )
 
     const execOutput = await exec.getExecOutput('curl', [
       '-s',
