@@ -1,7 +1,7 @@
 import {expect, afterEach, test, afterAll, describe} from '@jest/globals'
 import * as fs from 'fs'
 import * as os from 'os'
-import {SdkMan} from '../src/sdkman'
+import {SdkMan} from '@sebastien-perpignane/setup-sdkman'
 
 const testInstallDir_sdkman = `${os.homedir()}/_test_sdkinstalldir`
 
