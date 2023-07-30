@@ -2,7 +2,7 @@ import {expect, test} from '@jest/globals'
 
 import * as os from 'os'
 import {Groovy} from '../src/groovy'
-import {SdkMan} from '../src/sdkman'
+import {SdkMan} from '@sebastien-perpignane/setup-sdkman'
 
 test('groovy install fails if sdkman is not installed', async () => {
   let installDir = `${os.homedir()}/fakesdkdir_to_fail`
