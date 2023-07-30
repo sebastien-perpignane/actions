@@ -6,7 +6,7 @@ If you want to select the java distribution and version that will run your Groov
 # Usage:
 
   - `groovy-version`: The Groovy version that will be set up. Mandatory input.
-  - `sdkman-install-dir`: if you want to decide where sdkman will be installed. Default path is <user directory>/sdkman_gh_actions .
+  - `sdkman-install-dir`: if you want to decide where sdkman will be installed. Default path is  &lt;user directory&gt;/sdkman_gh_actions .
 
 
 # Examples
