@@ -1,4 +1,4 @@
-import {Candidate, SdkMan} from './sdkman'
+import {SdkMan, Candidate} from '@sebastien-perpignane/setup-sdkman'
 import * as exec from '@actions/exec'
 
 export class Groovy implements Candidate {

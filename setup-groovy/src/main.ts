@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {SdkMan} from './sdkman'
+import {SdkMan} from '@sebastien-perpignane/setup-sdkman'
 import {Groovy} from './groovy'
 import * as os from 'os'
 

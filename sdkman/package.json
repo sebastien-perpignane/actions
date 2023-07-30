@@ -1,15 +1,19 @@
 {
-  "name": "sdkman",
+  "name": "@sebastien-perpignane/setup-sdkman",
   "version": "0.0.0",
-  "private": true,
-  "description": "use SDKMAN! in GitHub workflows",
-  "main": "lib/main.js",
+  "private": false,
+  "description": "setup SDKMAN! in GitHub workflows",
+  "main": "lib/sdkman.js",
+  "types": "lib/sdkman.d.ts",
+  "files": [
+    "lib"
+  ],
   "scripts": {
     "build": "tsc",
     "format": "prettier --write '**/*.ts'",
     "format-check": "prettier --check '**/*.ts'",
     "lint": "eslint src/**/*.ts",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package": "ncc build src/sdkman.ts --source-map --license licenses.txt",
     "test": "jest '^.*\\.test\\.ts$'",
     "int-test": "jest '^.*\\.int-test\\.ts$'",
     "clean": "rm -Rf lib dist",
@@ -17,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/sebastien-perpignane/actions.git"
   },
   "keywords": [
     "actions",

@@ -109,7 +109,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.SDKMAN_DIR = void 0;
 const core = __importStar(__nccwpck_require__(186));
-const sdkman_1 = __nccwpck_require__(302);
+const setup_sdkman_1 = __nccwpck_require__(753);
 const groovy_1 = __nccwpck_require__(647);
 const os = __importStar(__nccwpck_require__(37));
 exports.SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`;
@@ -121,7 +121,7 @@ function run() {
             if (!sdkmanInstallDir) {
                 sdkmanInstallDir = exports.SDKMAN_DIR;
             }
-            const sdkMan = new sdkman_1.SdkMan(sdkmanInstallDir);
+            const sdkMan = new setup_sdkman_1.SdkMan(sdkmanInstallDir);
             const sdkmanExitCode = yield sdkMan.installSdkMan();
             // FIXME use throw error instead
             if (sdkmanExitCode) {
@@ -141,193 +141,6 @@ function run() {
 if (require.main === require.cache[eval('__filename')]) {
     run();
 }
-
-
-/***/ }),
-
-/***/ 302:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SdkMan = exports.SDKMAN_DIR = void 0;
-const exec = __importStar(__nccwpck_require__(514));
-const fs = __importStar(__nccwpck_require__(147));
-const core = __importStar(__nccwpck_require__(186));
-const os = __importStar(__nccwpck_require__(37));
-exports.SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`;
-class SdkMan {
-    // download url for sdkman -> https://api.sdkman.io/2/broker/download/groovy/4.0.13/linux
-    // the url redirects the http client to the real download url of the candidate
-    constructor(installDir) {
-        this.installDir = installDir;
-    }
-    installSdkMan() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const installScriptAsString = yield this.getBashSdkmanInstallationScript();
-            const installScriptExitCode = yield this.runSdkmanInstallScript(installScriptAsString);
-            this.configureSdkManForAutoAnswer();
-            core.exportVariable('sdkman_dir', this.installDir);
-            return installScriptExitCode;
-        });
-    }
-    getBashSdkmanInstallationScript() {
-        return __awaiter(this, void 0, void 0, function* () {
-            core.startGroup('Downloading SDKMAN bash install script :right_arrow_curving_down:');
-            const execOutput = yield exec.getExecOutput('curl', [
-                '-s',
-                'https://get.sdkman.io?rcupdate=false' //rcupdate=false -> do not modify .bashrc
-            ]);
-            core.endGroup();
-            return execOutput.stdout;
-        });
-    }
-    runSdkmanInstallScript(scriptStr) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const bashOptions = {
-                input: Buffer.from(scriptStr),
-                env: {
-                    SDKMAN_DIR: this.installDir
-                }
-            };
-            core.startGroup('Running SDKMAN installation script');
-            const cmdExitCode = yield exec.exec('bash', [], bashOptions);
-            core.endGroup();
-            return cmdExitCode;
-        });
-    }
-    configureSdkManForAutoAnswer() {
-        core.startGroup('Configuring SDKMAN! in non interactive mode');
-        const sdkmanConfigFilePath = `${this.installDir}/etc/config`;
-        const allFileContents = fs.readFileSync(sdkmanConfigFilePath, 'utf-8');
-        const newSdkManConfig = allFileContents
-            .split(/\r?\n/)
-            .map(line => {
-            if (line.startsWith('sdkman_auto_answer=')) {
-                return 'sdkman_auto_answer=true';
-            }
-            else {
-                return line;
-            }
-        })
-            .join('\n');
-        core.info(`New SDKMAN config:\n${newSdkManConfig}`);
-        fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig);
-        core.endGroup();
-    }
-    uninstall(candidate, version, force = false) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const params = [candidate, version];
-            if (force) {
-                params.push('--force');
-            }
-            yield this.runCommand('uninstall', params);
-        });
-    }
-    installCandidateAndAddToPath(candidate, version) {
-        return __awaiter(this, void 0, void 0, function* () {
-            core.startGroup(`Installing ${candidate.name} ${version}...`);
-            yield this.runCommand('install', [candidate.name, version]);
-            const candidateCurrentDir = this.candidateCurrentDir(candidate);
-            core.endGroup();
-            if (fs.existsSync(candidateCurrentDir)) {
-                core.addPath(`${this.candidateCurrentDir(candidate)}/bin`);
-                core.info(`Installing ${candidate.name} ${version}: OK`);
-            }
-            else {
-                throw Error(`Installation of ${candidate.name} failed`);
-            }
-        });
-    }
-    candidateDir(candidate) {
-        return `${this.candidatesDir()}/${candidate.name}`;
-    }
-    candidateCurrentDir(candidate) {
-        return `${this.candidateDir(candidate)}/current`;
-    }
-    candidateVersionDir(candidate, version) {
-        return `${this.candidateDir(candidate)}/${version}`;
-    }
-    isInstalled() {
-        return fs.existsSync(this.installDir);
-    }
-    isCandidateInstalled(candidate) {
-        return fs.existsSync(this.candidateDir(candidate));
-    }
-    isCandidateVersionInstalled(candidate, version) {
-        return fs.existsSync(this.candidateVersionDir(candidate, version));
-    }
-    runCommand(cmd, params) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const sdkmanCmd = `${cmd} ${params.join(' ')}`;
-            yield exec.getExecOutput('bash', [
-                '-c',
-                `export SDKMAN_DIR='${this.installDir}' && ` +
-                    `source ${this.installDir}/bin/sdkman-init.sh && ` +
-                    `sdk ${sdkmanCmd}`
-            ]);
-        });
-    }
-    candidatesDir() {
-        return `${this.installDir}/candidates`;
-    }
-}
-exports.SdkMan = SdkMan;
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            let sdkmanInstallDir = core.getInput('sdkman-install-dir');
-            if (!sdkmanInstallDir) {
-                sdkmanInstallDir = exports.SDKMAN_DIR;
-            }
-            const sdkMan = new SdkMan(sdkmanInstallDir);
-            const sdkmanExitCode = yield sdkMan.installSdkMan();
-            if (sdkmanExitCode) {
-                core.setFailed(`SDKMAN! installation: KO (error code: ${sdkmanExitCode})`);
-                return;
-            }
-            core.info('SDKMAN! installation: OK');
-        }
-        catch (error) {
-            if (error instanceof Error)
-                core.setFailed(error.message);
-        }
-    });
-}
-if (false) {}
 
 
 /***/ }),
@@ -2792,6 +2605,10 @@ function checkBypass(reqUrl) {
     if (!reqUrl.hostname) {
         return false;
     }
+    const reqHost = reqUrl.hostname;
+    if (isLoopbackAddress(reqHost)) {
+        return true;
+    }
     const noProxy = process.env['no_proxy'] || process.env['NO_PROXY'] || '';
     if (!noProxy) {
         return false;
@@ -2817,13 +2634,24 @@ function checkBypass(reqUrl) {
         .split(',')
         .map(x => x.trim().toUpperCase())
         .filter(x => x)) {
-        if (upperReqHosts.some(x => x === upperNoProxyItem)) {
+        if (upperNoProxyItem === '*' ||
+            upperReqHosts.some(x => x === upperNoProxyItem ||
+                x.endsWith(`.${upperNoProxyItem}`) ||
+                (upperNoProxyItem.startsWith('.') &&
+                    x.endsWith(`${upperNoProxyItem}`)))) {
             return true;
         }
     }
     return false;
 }
 exports.checkBypass = checkBypass;
+function isLoopbackAddress(host) {
+    const hostLower = host.toLowerCase();
+    return (hostLower === 'localhost' ||
+        hostLower.startsWith('127.') ||
+        hostLower.startsWith('[::1]') ||
+        hostLower.startsWith('[0:0:0:0:0:0:0:1]'));
+}
 //# sourceMappingURL=proxy.js.map
 
 /***/ }),
@@ -3321,6 +3149,193 @@ function copyFile(srcFile, destFile, force) {
     });
 }
 //# sourceMappingURL=io.js.map
+
+/***/ }),
+
+/***/ 753:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.SdkMan = exports.SDKMAN_DIR = void 0;
+const exec = __importStar(__nccwpck_require__(514));
+const fs = __importStar(__nccwpck_require__(147));
+const core = __importStar(__nccwpck_require__(186));
+const os = __importStar(__nccwpck_require__(37));
+exports.SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`;
+class SdkMan {
+    // download url for sdkman -> https://api.sdkman.io/2/broker/download/groovy/4.0.13/linux
+    // the url redirects the http client to the real download url of the candidate
+    constructor(installDir) {
+        this.installDir = installDir;
+    }
+    installSdkMan() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const installScriptAsString = yield this.getBashSdkmanInstallationScript();
+            const installScriptExitCode = yield this.runSdkmanInstallScript(installScriptAsString);
+            this.configureSdkManForAutoAnswer();
+            core.exportVariable('sdkman_dir', this.installDir);
+            return installScriptExitCode;
+        });
+    }
+    getBashSdkmanInstallationScript() {
+        return __awaiter(this, void 0, void 0, function* () {
+            core.startGroup('Downloading SDKMAN bash install script :right_arrow_curving_down:');
+            const execOutput = yield exec.getExecOutput('curl', [
+                '-s',
+                'https://get.sdkman.io?rcupdate=false' //rcupdate=false -> do not modify .bashrc
+            ]);
+            core.endGroup();
+            return execOutput.stdout;
+        });
+    }
+    runSdkmanInstallScript(scriptStr) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const bashOptions = {
+                input: Buffer.from(scriptStr),
+                env: {
+                    SDKMAN_DIR: this.installDir
+                }
+            };
+            core.startGroup('Running SDKMAN installation script');
+            const cmdExitCode = yield exec.exec('bash', [], bashOptions);
+            core.endGroup();
+            return cmdExitCode;
+        });
+    }
+    configureSdkManForAutoAnswer() {
+        core.startGroup('Configuring SDKMAN! in non interactive mode');
+        const sdkmanConfigFilePath = `${this.installDir}/etc/config`;
+        const allFileContents = fs.readFileSync(sdkmanConfigFilePath, 'utf-8');
+        const newSdkManConfig = allFileContents
+            .split(/\r?\n/)
+            .map(line => {
+            if (line.startsWith('sdkman_auto_answer=')) {
+                return 'sdkman_auto_answer=true';
+            }
+            else {
+                return line;
+            }
+        })
+            .join('\n');
+        core.info(`New SDKMAN config:\n${newSdkManConfig}`);
+        fs.writeFileSync(sdkmanConfigFilePath, newSdkManConfig);
+        core.endGroup();
+    }
+    uninstall(candidate, version, force = false) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const params = [candidate, version];
+            if (force) {
+                params.push('--force');
+            }
+            yield this.runCommand('uninstall', params);
+        });
+    }
+    installCandidateAndAddToPath(candidate, version) {
+        return __awaiter(this, void 0, void 0, function* () {
+            core.startGroup(`Installing ${candidate.name} ${version}...`);
+            yield this.runCommand('install', [candidate.name, version]);
+            const candidateCurrentDir = this.candidateCurrentDir(candidate);
+            core.endGroup();
+            if (fs.existsSync(candidateCurrentDir)) {
+                core.addPath(`${this.candidateCurrentDir(candidate)}/bin`);
+                core.info(`Installing ${candidate.name} ${version}: OK`);
+            }
+            else {
+                throw Error(`Installation of ${candidate.name} failed`);
+            }
+        });
+    }
+    candidateDir(candidate) {
+        return `${this.candidatesDir()}/${candidate.name}`;
+    }
+    candidateCurrentDir(candidate) {
+        return `${this.candidateDir(candidate)}/current`;
+    }
+    candidateVersionDir(candidate, version) {
+        return `${this.candidateDir(candidate)}/${version}`;
+    }
+    isInstalled() {
+        return fs.existsSync(this.installDir);
+    }
+    isCandidateInstalled(candidate) {
+        return fs.existsSync(this.candidateDir(candidate));
+    }
+    isCandidateVersionInstalled(candidate, version) {
+        return fs.existsSync(this.candidateVersionDir(candidate, version));
+    }
+    runCommand(cmd, params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const sdkmanCmd = `${cmd} ${params.join(' ')}`;
+            yield exec.getExecOutput('bash', [
+                '-c',
+                `export SDKMAN_DIR='${this.installDir}' && ` +
+                    `source ${this.installDir}/bin/sdkman-init.sh && ` +
+                    `sdk ${sdkmanCmd}`
+            ]);
+        });
+    }
+    candidatesDir() {
+        return `${this.installDir}/candidates`;
+    }
+}
+exports.SdkMan = SdkMan;
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let sdkmanInstallDir = core.getInput('sdkman-install-dir');
+            if (!sdkmanInstallDir) {
+                sdkmanInstallDir = exports.SDKMAN_DIR;
+            }
+            const sdkMan = new SdkMan(sdkmanInstallDir);
+            const sdkmanExitCode = yield sdkMan.installSdkMan();
+            if (sdkmanExitCode) {
+                core.setFailed(`SDKMAN! installation: KO (error code: ${sdkmanExitCode})`);
+                return;
+            }
+            core.info('SDKMAN! installation: OK');
+        }
+        catch (error) {
+            if (error instanceof Error)
+                core.setFailed(error.message);
+        }
+    });
+}
+if (false) {}
+
 
 /***/ }),
 
