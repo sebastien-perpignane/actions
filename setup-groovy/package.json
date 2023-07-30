@@ -1,8 +1,8 @@
 {
-  "name": "setup-groovy",
-  "version": "0.0.0",
+  "name": "@sebastien-perpignane/setup-groovy",
+  "version": "1.0.0",
   "private": true,
-  "description": "setup groovy in workflows",
+  "description": "setup Groovy in GitHub workflows",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
@@ -24,7 +24,7 @@
     "node",
     "setup"
   ],
-  "author": "",
+  "author": "Sébastien Perpignane",
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.10.0",
