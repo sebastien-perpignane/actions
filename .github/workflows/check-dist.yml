@@ -32,6 +32,9 @@ jobs:
         with:
           node-version: 18.x
           cache-dependency-path: '/setup-groovy/package-lock.json'
+          registry-url: 'https://npm.pkg.github.com'
+          # Defaults to the user or organization that owns the workflow file
+          scope: '@sebastien-perpignane'
           #cache: 'npm'
 
       - name: Install dependencies
