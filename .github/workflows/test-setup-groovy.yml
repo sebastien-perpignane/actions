@@ -13,6 +13,6 @@ on:
 
 jobs:
   test-setup-groovy:
-    uses: './.github/workflows/test.yml@main'
+    uses: './.github/workflows/test.yml'
     with:
       module: 'setup-groovy'
