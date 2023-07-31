@@ -46,10 +46,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: 'Run setup-groovy action'
-        if: ${{ inputs.module === 'setup-groovy' }}
+        if: ${{ inputs.module == 'setup-groovy' }}
         uses: ./setup-groovy/
         with:
           groovy-version: 4.0.13
       - name: 'Run setup-groovy action'
-        if: ${{ inputs.module === 'setup-sdkman' }}
+        if: ${{ inputs.module == 'setup-sdkman' }}
         uses: ./setup-sdkman/
