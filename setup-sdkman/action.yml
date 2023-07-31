@@ -10,6 +10,12 @@ inputs:
   sdkman-install-dir:
     required: false
     description: 'Where sdkman will be installed. Default value is <user directory>/sdkman_gh_actions'
+  candidate-name:
+    required: false
+    description: 'what SDKMAN candidate do you want to install ? java, groovy, scala, jmeter etc'
+  candidate-version:
+    required: false
+    description: 'what version of the candidate do you want to install ? Is mandatory is candidate-name is provided'
 
 outputs:
   sdkman_install_dir:
