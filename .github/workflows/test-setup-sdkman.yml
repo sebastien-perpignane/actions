@@ -1,4 +1,4 @@
-name: Check setup-sdkman/dist/
+name: 'build-test-setup-sdkman'
 
 on:
   push:

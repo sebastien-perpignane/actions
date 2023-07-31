@@ -1,4 +1,4 @@
-name: Check setup-groovy/dist/
+name: 'build-test-setup-groovy'
 
 on:
   push:
