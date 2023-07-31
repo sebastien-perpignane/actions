@@ -20,8 +20,8 @@ jobs:
         uses: actions/setup-node@v3.7.0
         with:
           node-version: 18.x
-          cache-dependency-path: '/setup-groovy/package-lock.json'
-          #cache: 'npm'
+          cache-dependency-path: 'setup-groovy/package-lock.json'
+          cache: 'npm'
       - run: |
           npm install
         env:
