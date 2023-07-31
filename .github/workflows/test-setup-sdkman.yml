@@ -13,6 +13,6 @@ on:
 
 jobs:
   test-setup-groovy:
-    uses: './test.yml'
+    uses: './test.yml@main'
     with:
       module: 'setup-sdkman'
