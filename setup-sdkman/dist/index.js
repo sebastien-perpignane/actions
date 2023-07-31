@@ -4094,6 +4094,8 @@ function run() {
                 return;
             }
             core.info('SDKMAN! installation: OK');
+            core.setOutput('sdkman_install_dir', sdkmanInstallDir);
+            core.exportVariable('SDKMAN_DIR', sdkmanInstallDir);
         }
         catch (error) {
             if (error instanceof Error)
