@@ -1,4 +1,4 @@
-# Setup Groovy
+# Setup SDKMAN!
 
 The setup-sdkman action allows to bring SDKMAN! in GitHub Actions runners. 
 Using SDKMAN, you can install and manage parallel versions of multiple Software Development Kits. For more details, see: [SDKMAN! official website](https://sdkman.io/)
@@ -39,6 +39,3 @@ steps:
       shell: bash
       run: ls .  # output: MyScript.groovy MyScript.class
 ```
-
-# Next step
-- Manage a cache for grape.
