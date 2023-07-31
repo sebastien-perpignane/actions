@@ -1,4 +1,4 @@
-name: Check dist/
+name: Check setup-groovy/dist/
 
 on:
   push:
