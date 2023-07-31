@@ -1,7 +1,7 @@
 import {expect, afterEach, test, afterAll, describe} from '@jest/globals'
 import * as fs from 'fs'
 import * as os from 'os'
-import {SdkMan} from '@sebastien-perpignane/setup-sdkman'
+import {SdkMan} from '../src/sdkman'
 
 const testInstallDir_sdkman = `${os.homedir()}/_test_sdkinstalldir`
 
@@ -41,33 +41,36 @@ test('current candidate dir', () => {
   )
 })
 
-let installJava = async (sdkMan: SdkMan) => {
-  let javaCandidate = {
-    name: 'java'
+const visualVmCandidateName = 'visualvm'
+const visualVmCandidateVersion = '2.1.6'
+
+let installVisualvm = async (sdkMan: SdkMan) => {
+  let visualvmCandidate = {
+    name: visualVmCandidateName
   }
 
   await sdkMan.installSdkMan()
 
-  await sdkMan.installCandidateAndAddToPath(javaCandidate, '20.0.2-amzn')
+  await sdkMan.installCandidateAndAddToPath(visualvmCandidate, visualVmCandidateVersion)
 }
 
-test('install sdkman then java', async () => {
+test('install sdkman then visualvm', async () => {
   try {
     const sdkMan = new SdkMan(testInstallDir_java)
 
-    await installJava(sdkMan)
+    await installVisualvm(sdkMan)
   } finally {
     deleteInstallDir(testInstallDir_java)
   }
 }, 90000)
 
-test('uninstall java', async () => {
+test('uninstall visualvm', async () => {
   try {
     const sdkMan = new SdkMan(testInstallDir_uninstall)
 
-    await installJava(sdkMan)
+    await installVisualvm(sdkMan)
 
-    await sdkMan.uninstall('java', '20.0.2-amzn', true)
+    await sdkMan.uninstall(visualVmCandidateName, visualVmCandidateVersion, true)
   } finally {
     deleteInstallDir(testInstallDir_uninstall)
   }

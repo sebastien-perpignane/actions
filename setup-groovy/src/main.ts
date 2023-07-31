@@ -1,9 +1,7 @@
 import * as core from '@actions/core'
-import {SdkMan} from '@sebastien-perpignane/setup-sdkman'
+import {SdkMan, SDKMAN_DIR as DEFAULT_SDKMAN_DIR} from '@sebastien-perpignane/setup-sdkman'
 import {Groovy} from './groovy'
 import * as os from 'os'
-
-export const SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`
 
 async function run(): Promise<void> {
   try {
@@ -11,7 +9,7 @@ async function run(): Promise<void> {
 
     let sdkmanInstallDir = core.getInput('sdkman-install-dir')
     if (!sdkmanInstallDir) {
-      sdkmanInstallDir = SDKMAN_DIR
+      sdkmanInstallDir = DEFAULT_SDKMAN_DIR
     }
     const sdkMan = new SdkMan(sdkmanInstallDir)
     const sdkmanExitCode = await sdkMan.installSdkMan()

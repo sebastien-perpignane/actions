@@ -14,7 +14,7 @@ export class SdkMan {
   // download url for sdkman -> https://api.sdkman.io/2/broker/download/groovy/4.0.13/linux
   // the url redirects the http client to the real download url of the candidate
 
-  constructor(private installDir: string) {}
+  constructor(private installDir: string = SDKMAN_DIR) {}
 
   async installSdkMan(): Promise<number> {
     const installScriptAsString = await this.getBashSdkmanInstallationScript()
@@ -165,6 +165,7 @@ async function run(): Promise<void> {
       return
     }
     core.info('SDKMAN! installation: OK')
+    core.setOutput('sdkman_install_dir', sdkmanInstallDir)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

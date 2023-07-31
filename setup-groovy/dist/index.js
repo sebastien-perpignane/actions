@@ -107,19 +107,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SDKMAN_DIR = void 0;
 const core = __importStar(__nccwpck_require__(186));
 const setup_sdkman_1 = __nccwpck_require__(753);
 const groovy_1 = __nccwpck_require__(647);
-const os = __importStar(__nccwpck_require__(37));
-exports.SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`;
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const groovyVersion = core.getInput('groovy-version', { required: true });
             let sdkmanInstallDir = core.getInput('sdkman-install-dir');
             if (!sdkmanInstallDir) {
-                sdkmanInstallDir = exports.SDKMAN_DIR;
+                sdkmanInstallDir = setup_sdkman_1.SDKMAN_DIR;
             }
             const sdkMan = new setup_sdkman_1.SdkMan(sdkmanInstallDir);
             const sdkmanExitCode = yield sdkMan.installSdkMan();

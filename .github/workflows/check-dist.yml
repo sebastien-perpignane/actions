@@ -44,7 +44,6 @@ jobs:
 
       - name: Rebuild the dist/ directory
         run: |
-          cat .npmrc
           npm run build
           npm run package
         env:

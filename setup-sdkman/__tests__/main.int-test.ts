@@ -2,18 +2,19 @@ import * as process from 'process'
 import * as childProcess from 'child_process'
 import * as path from 'path'
 import {expect, afterEach, test} from '@jest/globals'
+import {SDKMAN_DIR} from '../src/sdkman'
 import * as fs from 'fs'
 import * as os from 'os'
 
-const SDKMAN_DIR = `${os.homedir()}/__sdkman_install_test`
+const integrationTestSdkManDir = `${os.homedir()}/__test_sdkman_dir`
 
 afterEach(() => {
-  fs.rmSync(SDKMAN_DIR, {recursive: true, force: true})
+  fs.rmSync(integrationTestSdkManDir, {recursive: true, force: true})
 })
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('run action', () => {
-  process.env['INPUT_SDKMAN-INSTALL-DIR'] = SDKMAN_DIR
+  process.env['INPUT_SDKMAN-INSTALL-DIR'] = integrationTestSdkManDir
   const nodeProcessPath = process.execPath
   const mainScriptPath = path.join(__dirname, '..', 'lib', 'sdkman.js')
   const options: childProcess.ExecFileSyncOptions = {
@@ -25,5 +26,7 @@ test('run action', () => {
       .toString()
   )
 
-  expect(fs.existsSync(SDKMAN_DIR))
+  expect(fs.existsSync(integrationTestSdkManDir))
+  expect(fs.existsSync(`${integrationTestSdkManDir}/candidates/groovy/4.0.13`))
+  expect(fs.existsSync(`${integrationTestSdkManDir}/candidates/groovy/current`))
 }, 40000)

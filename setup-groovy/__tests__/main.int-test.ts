@@ -2,7 +2,7 @@ import * as process from 'process'
 import * as childProcess from 'child_process'
 import * as path from 'path'
 import {expect, afterEach, test} from '@jest/globals'
-import {SDKMAN_DIR} from '../src/main'
+import {SDKMAN_DIR} from '@sebastien-perpignane/setup-sdkman'
 import * as fs from 'fs'
 
 afterEach(() => {
