@@ -1,7 +1,6 @@
 import * as core from '@actions/core'
 import {SdkMan, SDKMAN_DIR as DEFAULT_SDKMAN_DIR} from '@sebastien-perpignane/setup-sdkman'
 import {Groovy} from './groovy'
-import * as os from 'os'
 
 async function run(): Promise<void> {
   try {

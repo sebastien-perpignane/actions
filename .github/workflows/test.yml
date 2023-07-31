@@ -50,6 +50,6 @@ jobs:
         uses: ./setup-groovy/
         with:
           groovy-version: 4.0.13
-      - name: 'Run setup-groovy action'
+      - name: 'Run setup-sdkman action'
         if: ${{ inputs.module == 'setup-sdkman' }}
         uses: ./setup-sdkman/
