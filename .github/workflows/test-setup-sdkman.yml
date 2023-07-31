@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-setup-groovy:
+  test-setup-sdkman:
     uses: './.github/workflows/test.yml'
     with:
       module: 'setup-sdkman'
