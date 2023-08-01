@@ -4095,9 +4095,9 @@ function run() {
             }
             core.info('SDKMAN! installation: OK');
             core.setOutput('sdkman_install_dir', sdkmanInstallDir);
-            let candidateName = core.getInput('candidate-name');
+            const candidateName = core.getInput('candidate-name');
             if (candidateName) {
-                let candidateVersion = core.getInput('candidate-version', { required: true });
+                const candidateVersion = core.getInput('candidate-version', { required: true });
                 sdkMan.installCandidateAndAddToPath({ name: candidateName }, candidateVersion);
             }
         }
