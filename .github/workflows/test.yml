@@ -5,6 +5,7 @@ on: # rebuild any PRs and main branch changes
     inputs:
       module:
         description: module to be tested (setup-groovy, setup-sdkman)
+        required: true
         type: choice
         options:
           - "setup-sdkman"
