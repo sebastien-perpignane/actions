@@ -1,0 +1,19 @@
+name: 'Check setup-sdkman/dist/'
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "setup-sdkman/**"
+      - "!**.md"
+  pull_request:
+    paths:
+      - "setup-sdkman"
+      - "!**.md"
+
+jobs:
+  check-dist-sdkman:
+    uses: './.github/workflows/check-dist.yml'
+    with:
+      module: 'setup-sdkman'

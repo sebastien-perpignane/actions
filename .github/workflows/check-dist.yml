@@ -5,16 +5,23 @@
 # We need to make sure the checked-in `index.js` actually matches what we expect it to be.
 name: Check dist/
 
-on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - '**.md'
-  pull_request:
-    paths-ignore:
-      - '**.md'
+on: 
   workflow_dispatch:
+      inputs:
+        module:
+          description: module to be tested (setup-groovy, setup-sdkman)
+          type: choice
+          required: true
+          options:
+            - "setup-sdkman"
+            - "setup-groovy"
+
+  workflow_call:
+    inputs:
+      module:
+        description: module to be tested (setup-groovy, setup-sdkman)
+        type: string
+        required: true
 
 jobs:
   check-dist:
@@ -22,7 +29,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./setup-groovy
+        working-directory: ./${{ inputs.module }}
 
     steps:
       - uses: actions/checkout@v3
@@ -31,9 +38,8 @@ jobs:
         uses: actions/setup-node@v3.7.0
         with:
           node-version: 18.x
-          cache-dependency-path: 'setup-groovy/package-lock.json'
+          cache-dependency-path: '${{ inputs.module }}/package-lock.json'
           registry-url: 'https://npm.pkg.github.com'
-          # Defaults to the user or organization that owns the workflow file
           scope: '@sebastien-perpignane'
           cache: 'npm'
 
