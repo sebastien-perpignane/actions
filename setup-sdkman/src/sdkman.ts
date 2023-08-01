@@ -154,14 +154,11 @@ export class SdkMan {
 
 async function run(): Promise<void> {
   try {
+    
     let sdkmanInstallDir = core.getInput('sdkman-install-dir')
     if (!sdkmanInstallDir) {
       sdkmanInstallDir = SDKMAN_DIR
     }
-
-    
-
-
 
     const sdkMan = new SdkMan(sdkmanInstallDir)
     const sdkmanExitCode = await sdkMan.installSdkMan()
@@ -172,14 +169,15 @@ async function run(): Promise<void> {
     core.info('SDKMAN! installation: OK')
     core.setOutput('sdkman_install_dir', sdkmanInstallDir)
 
-    let candidateName = core.getInput('candidate-name')
+    const candidateName = core.getInput('candidate-name')
 
     if (candidateName) {
-      let candidateVersion = core.getInput('candidate-version', {required: true})
+      const candidateVersion = core.getInput('candidate-version', {required: true})
       sdkMan.installCandidateAndAddToPath({name: candidateName}, candidateVersion)
     }
 
-  } catch (error) {
+  } 
+  catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }
