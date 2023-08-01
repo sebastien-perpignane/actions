@@ -33,6 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         language: [ 'TypeScript' ]
+        module: [ 'setup-groovy', 'setup-sdkman' ]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby' ]
         # Learn more about CodeQL language support at https://git.io/codeql-language-support
 
@@ -45,7 +46,7 @@ jobs:
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
-        source-root: setup-groovy/src
+        source-root: ${{ matrix.module }}/src
         # If you wish to specify custom queries, you can do so here or in a config file.
         # By default, queries listed here will override any specified in a config file.
         # Prefix the list here with "+" to use these queries and those in the config file.
