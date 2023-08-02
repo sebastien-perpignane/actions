@@ -6,10 +6,6 @@ import * as os from 'os'
 
 export const SDKMAN_DIR = `${os.homedir()}/sdkman_gh_actions`
 
-export interface Candidate {
-  name: string
-}
-
 export class SdkMan {
   // download url for sdkman -> https://api.sdkman.io/2/broker/download/groovy/4.0.13/linux
   // the url redirects the http client to the real download url of the candidate
@@ -94,12 +90,12 @@ export class SdkMan {
   }
 
   async installCandidateAndAddToPath(
-    candidate: Candidate,
+    candidate: string,
     version: string
   ): Promise<void> {
-    core.startGroup(`Installing ${candidate.name} ${version}...`)
+    core.startGroup(`Installing ${candidate} ${version}...`)
 
-    await this.runCommand('install', [candidate.name, version])
+    await this.runCommand('install', [candidate, version])
 
     const candidateCurrentDir = this.candidateCurrentDir(candidate)
 
@@ -107,21 +103,21 @@ export class SdkMan {
 
     if (fs.existsSync(candidateCurrentDir)) {
       core.addPath(`${this.candidateCurrentDir(candidate)}/bin`)
-      core.info(`Installing ${candidate.name} ${version}: OK`)
+      core.info(`Installing ${candidate} ${version}: OK`)
     } else {
-      throw Error(`Installation of ${candidate.name} failed`)
+      throw Error(`Installation of ${candidate} failed`)
     }
   }
 
-  private candidateDir(candidate: Candidate): string {
-    return `${this.candidatesDir()}/${candidate.name}`
+  private candidateDir(candidate: string): string {
+    return `${this.candidatesDir()}/${candidate}`
   }
 
-  private candidateCurrentDir(candidate: Candidate): string {
+  private candidateCurrentDir(candidate: string): string {
     return `${this.candidateDir(candidate)}/current`
   }
 
-  private candidateVersionDir(candidate: Candidate, version: string): string {
+  private candidateVersionDir(candidate: string, version: string): string {
     return `${this.candidateDir(candidate)}/${version}`
   }
 
@@ -129,11 +125,11 @@ export class SdkMan {
     return fs.existsSync(this.installDir)
   }
 
-  isCandidateInstalled(candidate: Candidate): boolean {
+  isCandidateInstalled(candidate: string): boolean {
     return fs.existsSync(this.candidateDir(candidate))
   }
 
-  isCandidateVersionInstalled(candidate: Candidate, version: string): boolean {
+  isCandidateVersionInstalled(candidate: string, version: string): boolean {
     return fs.existsSync(this.candidateVersionDir(candidate, version))
   }
 
@@ -154,30 +150,33 @@ export class SdkMan {
 
 async function run(): Promise<void> {
   try {
-    
     let sdkmanInstallDir = core.getInput('sdkman-install-dir')
     if (!sdkmanInstallDir) {
       sdkmanInstallDir = SDKMAN_DIR
     }
 
     const sdkMan = new SdkMan(sdkmanInstallDir)
-    const sdkmanExitCode = await sdkMan.installSdkMan()
-    if (sdkmanExitCode) {
-      core.setFailed(`SDKMAN! installation: KO (error code: ${sdkmanExitCode})`)
-      return
+    if (!sdkMan.isInstalled()) {
+      const sdkmanExitCode = await sdkMan.installSdkMan()
+      if (sdkmanExitCode) {
+        core.setFailed(
+          `SDKMAN! installation: KO (error code: ${sdkmanExitCode})`
+        )
+        return
+      }
+      core.info('SDKMAN! installation: OK')
+      core.setOutput('sdkman_install_dir', sdkmanInstallDir)
     }
-    core.info('SDKMAN! installation: OK')
-    core.setOutput('sdkman_install_dir', sdkmanInstallDir)
 
     const candidateName = core.getInput('candidate-name')
 
     if (candidateName) {
-      const candidateVersion = core.getInput('candidate-version', {required: true})
-      sdkMan.installCandidateAndAddToPath({name: candidateName}, candidateVersion)
+      const candidateVersion = core.getInput('candidate-version', {
+        required: true
+      })
+      sdkMan.installCandidateAndAddToPath(candidateName, candidateVersion)
     }
-
-  } 
-  catch (error) {
+  } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
 }

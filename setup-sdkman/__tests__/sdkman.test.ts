@@ -30,12 +30,12 @@ test('install sdkman', async () => {
 }, 40000)
 
 test('candidate dir', () => {
-  let groovyDir = sdkMan['candidateDir']({name: 'groovy'})
+  let groovyDir = sdkMan['candidateDir']('groovy')
   expect(groovyDir).toEqual(`${testInstallDir_sdkman}/candidates/groovy`)
 })
 
 test('current candidate dir', () => {
-  let groovyCurrentDir = sdkMan['candidateCurrentDir']({name: 'groovy'})
+  let groovyCurrentDir = sdkMan['candidateCurrentDir']('groovy')
   expect(groovyCurrentDir).toEqual(
     `${testInstallDir_sdkman}/candidates/groovy/current`
   )
@@ -45,13 +45,12 @@ const visualVmCandidateName = 'visualvm'
 const visualVmCandidateVersion = '2.1.6'
 
 let installVisualvm = async (sdkMan: SdkMan) => {
-  let visualvmCandidate = {
-    name: visualVmCandidateName
-  }
-
   await sdkMan.installSdkMan()
 
-  await sdkMan.installCandidateAndAddToPath(visualvmCandidate, visualVmCandidateVersion)
+  await sdkMan.installCandidateAndAddToPath(
+    visualVmCandidateName,
+    visualVmCandidateVersion
+  )
 }
 
 test('install sdkman then visualvm', async () => {
@@ -70,7 +69,11 @@ test('uninstall visualvm', async () => {
 
     await installVisualvm(sdkMan)
 
-    await sdkMan.uninstall(visualVmCandidateName, visualVmCandidateVersion, true)
+    await sdkMan.uninstall(
+      visualVmCandidateName,
+      visualVmCandidateVersion,
+      true
+    )
   } finally {
     deleteInstallDir(testInstallDir_uninstall)
   }

@@ -4033,21 +4033,21 @@ class SdkMan {
     }
     installCandidateAndAddToPath(candidate, version) {
         return __awaiter(this, void 0, void 0, function* () {
-            core.startGroup(`Installing ${candidate.name} ${version}...`);
-            yield this.runCommand('install', [candidate.name, version]);
+            core.startGroup(`Installing ${candidate} ${version}...`);
+            yield this.runCommand('install', [candidate, version]);
             const candidateCurrentDir = this.candidateCurrentDir(candidate);
             core.endGroup();
             if (fs.existsSync(candidateCurrentDir)) {
                 core.addPath(`${this.candidateCurrentDir(candidate)}/bin`);
-                core.info(`Installing ${candidate.name} ${version}: OK`);
+                core.info(`Installing ${candidate} ${version}: OK`);
             }
             else {
-                throw Error(`Installation of ${candidate.name} failed`);
+                throw Error(`Installation of ${candidate} failed`);
             }
         });
     }
     candidateDir(candidate) {
-        return `${this.candidatesDir()}/${candidate.name}`;
+        return `${this.candidatesDir()}/${candidate}`;
     }
     candidateCurrentDir(candidate) {
         return `${this.candidateDir(candidate)}/current`;
@@ -4088,17 +4088,21 @@ function run() {
                 sdkmanInstallDir = exports.SDKMAN_DIR;
             }
             const sdkMan = new SdkMan(sdkmanInstallDir);
-            const sdkmanExitCode = yield sdkMan.installSdkMan();
-            if (sdkmanExitCode) {
-                core.setFailed(`SDKMAN! installation: KO (error code: ${sdkmanExitCode})`);
-                return;
+            if (!sdkMan.isInstalled()) {
+                const sdkmanExitCode = yield sdkMan.installSdkMan();
+                if (sdkmanExitCode) {
+                    core.setFailed(`SDKMAN! installation: KO (error code: ${sdkmanExitCode})`);
+                    return;
+                }
+                core.info('SDKMAN! installation: OK');
+                core.setOutput('sdkman_install_dir', sdkmanInstallDir);
             }
-            core.info('SDKMAN! installation: OK');
-            core.setOutput('sdkman_install_dir', sdkmanInstallDir);
             const candidateName = core.getInput('candidate-name');
             if (candidateName) {
-                const candidateVersion = core.getInput('candidate-version', { required: true });
-                sdkMan.installCandidateAndAddToPath({ name: candidateName }, candidateVersion);
+                const candidateVersion = core.getInput('candidate-version', {
+                    required: true
+                });
+                sdkMan.installCandidateAndAddToPath(candidateName, candidateVersion);
             }
         }
         catch (error) {
