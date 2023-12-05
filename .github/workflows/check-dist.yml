@@ -37,7 +37,7 @@ jobs:
       - name: Set Node.js 18
         uses: actions/setup-node@v4.0.0
         with:
-          node-version: 18
+          node-version: 18.0.0
           cache-dependency-path: '${{ inputs.module }}/package-lock.json'
           registry-url: 'https://npm.pkg.github.com'
           scope: '@sebastien-perpignane'
