@@ -9,6 +9,8 @@ jobs:
     steps:
       - name: 'setup-groovy action'
         uses: sebastien-perpignane/actions/setup-groovy@main
+        with:
+          groovy-version: 4.0.27
 
       - name: groovy step
         shell: groovy {0}
