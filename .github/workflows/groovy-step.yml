@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'setup-groovy action'
-        uses: ./setup-groovy/
+        uses: sebastien-perpignane/actions/setup-groovy/
 
       - name: groovy step
         shell: groovy {0}
