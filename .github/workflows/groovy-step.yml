@@ -15,4 +15,21 @@ jobs:
       - name: groovy step
         shell: groovy {0}
         run: |
+          
+          def envFileName = System.env("GITHUB_ENV")
+          println "envFileName: $envFileName"
+          def envFile = new File(envFileName)
+          
+          def addEnv = { String n, String v ->
+            def ls = System.lineSeparator()
+            envFile.append("$ls$n=$v")
+          }
+          
           println "groovy rocks"
+          
+          addEnv("my_name", "seb")
+
+      - name: display env
+        shell: bash
+        run: |
+          echo $my_name
