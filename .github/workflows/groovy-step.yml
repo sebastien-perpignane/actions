@@ -1,0 +1,16 @@
+name: 'groovy step'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-setup-groovy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'setup-groovy action'
+        uses: ./setup-groovy/
+
+      - name: groovy step
+        shell: groovy {0}
+        run: |
+          println "groovy rocks"
