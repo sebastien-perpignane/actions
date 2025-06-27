@@ -16,7 +16,7 @@ jobs:
         shell: groovy {0}
         run: |
           
-          def envFileName = System.env("GITHUB_ENV")
+          def envFileName = System.getenv("GITHUB_ENV")
           println "envFileName: $envFileName"
           def envFile = new File(envFileName)
           
