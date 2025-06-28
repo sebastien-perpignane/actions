@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-setup-groovy:
+  groovy-step:
     runs-on: ubuntu-latest
     steps:
       - name: 'setup-groovy action'
@@ -21,8 +21,8 @@ jobs:
           def envFile = new File(envFileName)
           
           def addEnv = { String n, String v ->
-            def ls = System.lineSeparator()
-            envFile.append("$ls$n=$v")
+            def eol = System.lineSeparator()
+            envFile.append("$n=$v$eol")
           }
           
           println "groovy rocks"

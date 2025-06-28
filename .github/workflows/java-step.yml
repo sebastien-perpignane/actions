@@ -1,0 +1,24 @@
+name: 'groovy step'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  java-step:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 'setup-java action'
+        uses: actions/setup-java@v4
+        with:
+          java-version: 24
+          distribution: temurin
+
+      - name: 'setup-javastep'
+        uses: ./setup-javastep/
+      - name: java step
+        shell: javastep {0}
+        run: |
+          void main() {
+            System.out.println("Java step");
+          }
