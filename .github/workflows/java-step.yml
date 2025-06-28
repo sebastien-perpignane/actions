@@ -1,4 +1,4 @@
-name: 'groovy step'
+name: 'java step'
 
 on:
   workflow_dispatch:
