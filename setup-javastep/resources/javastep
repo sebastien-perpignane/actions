@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+cp -f "$1" /tmp/the_java_script
+cat /tmp/the_java_script
+java --enable-preview --source 24 /tmp/the_java_script

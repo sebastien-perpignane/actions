@@ -17,7 +17,7 @@ jobs:
       - name: 'setup-javastep'
         uses: ./setup-javastep/
       - name: java step
-        shell: bash javastep {0}
+        shell: javastep {0}
         run: |
           void main() {
             System.out.println("Java step");

@@ -5,34 +5,14 @@ author: 'Sébastien Perpignane'
 branding:
   icon: 'zap'
   color: 'red'
-
-inputs:
-  source-version:
-    description: 'java version to use to run the steps'
-    required: true
-    default: '24'
   
 runs:
   using: 'composite'
   steps:
-    - name: 'create dir'
+    - name: 'create script'
       shell: bash
       run: |
         run_step_path="/tmp/_java_step_"
         mkdir "$run_step_path"
-        
+        cp ${{ github.action_path }}/resources/javastep "$run_step_path"
         echo "$run_step_path" >> $GITHUB_PATH
-        
-        echo "RUN_STEP_PATH=$run_step_path" >> $GITHUB_ENV
-
-    - name: 'create script'
-      shell: bash
-      run: |
-        echo '
-          cp -f "$1" /tmp/the_java_script
-          java --enable-preview --source ${{ inputs.source-version }} /tmp/the_java_script
-        ' > "${RUN_STEP_PATH}/javastep"
-        
-        cat "${RUN_STEP_PATH}/javastep"
-        
-        chmod +x "${RUN_STEP_PATH}/javastep"
