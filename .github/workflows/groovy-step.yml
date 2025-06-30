@@ -21,7 +21,7 @@ jobs:
               String envFileName = System.getenv("GITHUB_ENV")
               File envFile = new File(envFileName)
             
-              String outFileName = System.getenv("GITHUB_OUT")
+              String outFileName = System.getenv("GITHUB_OUTPUT")
               File outFile = new File(outFileName)
             
               static String eol = System.lineSeparator()
