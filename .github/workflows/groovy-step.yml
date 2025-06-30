@@ -64,6 +64,8 @@ jobs:
           #! /usr/bin/bash
           groovy -b StepScript $1
           ' > temp_bin/groovystep
+          
+          chmod +x temp_bin/groovystep
 
           echo "$(pwd)/temp_bin" > $GITHUB_PATH
 
