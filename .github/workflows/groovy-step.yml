@@ -61,8 +61,8 @@ jobs:
         run: |
           mkdir temp_bin
           echo '
-#! /usr/bin/bash
-groovy -b StepScript $1
+          #! /usr/bin/bash
+          groovy -b StepScript $1
           ' > temp_bin/groovystep
 
           echo "$(pwd)/temp_bin" > $GITHUB_PATH
