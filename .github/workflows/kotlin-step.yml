@@ -1,4 +1,5 @@
-name: 'groovy step'
+name: 'kotlin
+ step'
 
 on:
   workflow_dispatch:
