@@ -1,0 +1,24 @@
+name: 'groovy step'
+
+on:
+  workflow_dispatch:
+
+jobs:
+  groovy-step:
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup kotlin
+        uses: sebastien-perpignane/actions/setup-sdkman@main
+        with:
+          candidate-name: 'kotlin'
+          candidate-version: '1.9.22'
+      - name: setup kscript
+        uses: sebastien-perpignane/actions/setup-sdkman@main
+        with:
+          candidate-name: 'kscript'
+          candidate-version: '4.2.3'
+      - name: kotlin step
+        id: kscript-step
+        shell: kscript {0}
+        run: |
+          println("kotlin rocks")
