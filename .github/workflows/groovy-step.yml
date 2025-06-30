@@ -66,6 +66,8 @@ jobs:
           ' > temp_bin/groovystep
           
           chmod +x temp_bin/groovystep
+          
+          cat temp_bin/groovystep
 
           echo "$(pwd)/temp_bin" > $GITHUB_PATH
 
