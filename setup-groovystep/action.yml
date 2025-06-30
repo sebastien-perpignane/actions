@@ -1,0 +1,39 @@
+name: 'Setup groovystep'
+description: >
+  Generate a shell script named 'groovystep' that allows to run github workflow steps written in groovy.
+  The script will have access to utility methods making usage of github workflow convenient:
+  * addEnv(String name, String value) -> equivant of echo "name=$value" >> $GITHUB_ENV
+  * addOut(String name, String value) > equivant of echo "name=$value" >> $GITHUB_OUTPUT
+  usage -> 
+  shell: groovystep {0}
+author: 'Sébastien Perpignane'
+
+branding:
+  icon: 'zap'
+  color: 'red'
+
+inputs:
+  groovy-version:
+    description: 'groovy version to use to run the steps'
+    required: true
+    default: '4.0.27'
+  
+runs:
+  using: 'composite'
+  steps:
+    - name: 'setup groovy'
+      uses: sebastien-perpignane/actions/setup-groovy@main
+      with:
+        groovy-version: ${{ inputs.groovy-version }}
+    - name: 'copy base groovy script'
+      shell: bash
+      run: |
+        cp ${{ github.action_path }}/resources/StepScript.groovy ./StepScript.groovy
+    - name: 'copy groovystep shell script'
+      shell: bash
+      run: |
+        run_step_path="/tmp/_groovy_step_"
+        mkdir "$run_step_path"
+        cp "${{ github.action_path }}/resources/groovystep" "$run_step_path"
+#        chmod +x "${run_step_path}/groovystep"
+        echo "$run_step_path" >> $GITHUB_PATH

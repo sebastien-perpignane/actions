@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+groovy -b StepScript "$1"
