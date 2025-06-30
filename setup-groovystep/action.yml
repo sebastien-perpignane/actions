@@ -35,5 +35,5 @@ runs:
         run_step_path="/tmp/_groovy_step_"
         mkdir "$run_step_path"
         cp "${{ github.action_path }}/resources/groovystep" "$run_step_path"
-#        chmod +x "${run_step_path}/groovystep"
+        # chmod +x "${run_step_path}/groovystep"
         echo "$run_step_path" >> $GITHUB_PATH
