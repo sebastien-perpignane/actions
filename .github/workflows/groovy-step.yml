@@ -10,14 +10,18 @@ jobs:
       - name: setup groovystep
         uses: sebastien-perpignane/actions/setup-groovystep@main
       - name: groovy step
+        id: groovy-step
         shell: groovystep {0}
         run: |
           
           println "groovy rocks"
           
           addEnv("my_name", "seb")
+          
+          addOut("my_output", "created by groovy step")
 
       - name: display env
         shell: bash
         run: |
+          echo "groovy step output: ${{ steps.groovy-step.outputs.my_output }}"
           echo $my_name
