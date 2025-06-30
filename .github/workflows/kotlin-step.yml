@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  groovy-step:
+  kotlin-step:
     runs-on: ubuntu-latest
     steps:
       - name: setup kotlin
