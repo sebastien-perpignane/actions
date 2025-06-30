@@ -60,8 +60,7 @@ jobs:
         shell: bash
         run: |
           mkdir temp_bin
-          echo '
-          #!/usr/bin/env sh
+          echo '#!/usr/bin/env sh
           groovy -b StepScript "$1"
           ' > temp_bin/groovystep
           
