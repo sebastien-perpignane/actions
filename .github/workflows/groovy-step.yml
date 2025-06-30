@@ -56,8 +56,20 @@ jobs:
             
           }' > StepScript.groovy
 
+      - name: setup-groovy-step
+        shell: bash
+        run: |
+          mkdir temp_bin
+          echo '
+#! /usr/bin/bash
+groovy -b StepScript $1
+          ' > temp_bin/groovystep
+
+          echo "$(pwd)/temp_bin" > $GITHUB_PATH
+
       - name: groovy step
-        shell: groovy -b StepScript {0}
+        #shell: groovy -b StepScript {0}
+        shell: groovystep {0}
         run: |
           
           println "groovy rocks"
