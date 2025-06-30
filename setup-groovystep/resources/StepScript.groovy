@@ -3,7 +3,7 @@ abstract class StepScript extends Script {
   String envFileName = System.getenv("GITHUB_ENV")
   File envFile = new File(envFileName)
 
-  String outFileName = System.getenv("GITHUB_OUT")
+  String outFileName = System.getenv("GITHUB_OUTPUT")
   File outFile = new File(outFileName)
 
   static String eol = System.lineSeparator()
@@ -14,7 +14,7 @@ abstract class StepScript extends Script {
   }
 
   def addOut = { String k, String v ->
-    println "adding $k, $v to GITHUB_OUT"
+    println "adding $k, $v to GITHUB_OUTPUT"
     appendToKeyValueFile(outFile, k, v)
   }
 
