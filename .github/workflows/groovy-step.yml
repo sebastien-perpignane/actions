@@ -71,7 +71,7 @@ jobs:
 #          echo "$(pwd)/temp_bin" > $GITHUB_PATH
 
       - name: setup groovystep
-        uses: sebastien-perpignane/actions/setup-groovystep
+        uses: sebastien-perpignane/actions/setup-groovystep@main
       - name: groovy step
         shell: groovystep {0}
         run: |
